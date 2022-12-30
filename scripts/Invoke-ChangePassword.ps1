@@ -1,0 +1,1 @@
+Start-Process "https://account.activedirectory.windowsazure.com/ChangePassword.aspx?portalUrl=https://account.activedirectory.windowsazure.com/profile"

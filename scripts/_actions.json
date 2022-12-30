@@ -1,0 +1,12 @@
+{
+    "actions": [
+        {
+            "actionName": "Clear recycle bin",
+            "script": "Invoke-ClearRecycleBin.ps1"
+        },
+        {
+            "actionName": "Change Password",
+            "script": "Invoke-ChangePassword.ps1"
+        }
+    ]
+}
