@@ -6,7 +6,7 @@
 # System Information Tool
 The System Information Tool is a software that displays various system information, such as the serial number, IP address, username and logged-in user, and many more. It also provides functions for troubleshooting and analyzing problems with Intune Management and Intune Management Extension. In addition, custom scripts for self-service support can be added and provided to them user. The tool is thus a useful resource for users who need quick access to system information and assistance in troubleshooting problems.
 
-![Tool View](https://github.com/JayRHa/System-Information-Tool/blob/main/UI/.images/toolView.png)
+![Tool View](https://github.com/JayRHa/System-Information-Tool/blob/main/.images/toolView.png)
 
 ## Installing the application
 In the repo there is an installation wrapper that creates a start menu entry and unblocks the dlls.
@@ -25,18 +25,18 @@ Install-SystemInformationTool.ps1
 ## Features
 ###  Informarion View
 You can see an overview of different system attributes like Hostname, Ips, SerialNr., Ram and many more
-![Tool View](https://github.com/JayRHa/System-Information-Tool/blob/main/UI/.images/toolView.png)
+![Tool View](https://github.com/JayRHa/System-Information-Tool/blob/main/.images/toolView.png)
 
 ###  Intune and support actions
 This feature provides you different actions to troubleshoot and fix the intune management extension.
 
 You can add, change and delete custom attribute to a multiple devices device
-![Intune](https://github.com/JayRHa/System-Information-Tool/blob/main/UI/.images/intune.png)
+![Intune](https://github.com/JayRHa/System-Information-Tool/blob/main/.images/intune.png)
 
 ### Trigger deive action
 You can include your custom script and self service actions on an realy easy way to this tool.
-![Support](https://github.com/JayRHa/System-Information-Tool/blob/main/UI/.images/support.png)
+![Support](https://github.com/JayRHa/System-Information-Tool/blob/main/.images/support.png)
 To add self service actions you have to place the powershell script in the script folder and add to the "_actions.json" the action name and the script name
-![Action](https://github.com/JayRHa/System-Information-Tool/blob/main/UI/.images/action.png)
+![Action](https://github.com/JayRHa/System-Information-Tool/blob/main/.images/action.png)
 
 
