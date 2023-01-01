@@ -30,7 +30,6 @@ You can see an overview of different system attributes like Hostname, Ips, Seria
 ###  Intune and support actions
 This feature provides you different actions to troubleshoot and fix the intune management extension.
 
-You can add, change and delete custom attribute to a multiple devices device
 ![Intune](https://github.com/JayRHa/System-Information-Tool/blob/main/.images/intune.png)
 
 ### Trigger deive action
