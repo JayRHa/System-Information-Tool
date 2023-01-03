@@ -60,7 +60,6 @@ function Get-IntuneSyncTimestamp {
     $account = $((Get-ChildItem -Path "HKLM:\SOFTWARE\Microsoft\Provisioning\OMADM\Accounts")[0].Name).Replace("HKEY_LOCAL_MACHINE", "HKLM:")
     $time = (Get-ItemProperty -Path "$account\Protected\ConnInfo").ServerLastAccessTime
     $date = [datetime]::ParseExact($time, "yyyyMMddTHHmmssZ", $null)
-    # Format the DateTime object as a string in the desired output format
     return $date.ToString("MM/dd/yyyy HH:mm:ss")
 }
 
@@ -71,6 +70,7 @@ function Get-SysInfo {
     $wifiSsid = Get-WiFiSSID -adapters $adapters
     $system = Get-WmiObject -Class Win32_ComputerSystem
     $osName = $(($computerInfo.OsName).Replace("Microsoft ", ""))
+    $uptime = ((Get-WinEvent -ProviderName 'Microsoft-Windows-Kernel-Boot'| where {$_.ID -eq 27 -and $_.message -like "*0x0*"} -ea silentlycontinue)[0]).TimeCreated
 
     return @{
         Hostname            = $env:computername
@@ -80,7 +80,7 @@ function Get-SysInfo {
         CurrentUser         = $env:username
         EnrolledUser        = $computerInfo.OsRegisteredUser
         LastIntuneSync      = Get-IntuneSyncTimestamp
-        Uptime              = "$($computerInfo.OsLastBootUpTime)"
+        Uptime              = $uptime.ToString("MM/dd/yyyy HH:mm:ss")
         SerialNr            = (Get-ciminstance Win32_OperatingSystem).SerialNumber
         WifiSsid            = if($wifiSsid){$wifiSsid}else{"No Wifi connection"}
         LanTest             = Test-ConnectionType -adapters $adapters -test "*Wireless*"

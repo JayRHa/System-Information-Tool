@@ -62,8 +62,8 @@ function Get-ComputerInformation {
     }else{
         Write-Host -ForegroundColor red $osEdition
     }
-    Write-Host "  Winodws Version :     $($computerInfo.WindowsVersion) $($computerInfo.OSDisplayVersion)"
-    Write-Host "  Winodws InstallDate : $($computerInfo.OsInstallDate)"
+    Write-Host "  Windows Version :     $($computerInfo.WindowsVersion) $($computerInfo.OSDisplayVersion)"
+    Write-Host "  Windows InstallDate : $($computerInfo.OsInstallDate)"
     Write-Host "  Bios Version :        $($computerInfo.BiosBIOSVersion)"
     Write-Host "  Bios Status :         $($computerInfo.BiosStatus)"
     Write-Host "  Bios Serialnumber :   $($computerInfo.BiosSeralNumber)"

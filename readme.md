@@ -36,6 +36,7 @@ You can add, change and delete custom attribute to a multiple devices device
 ### Trigger deive action
 You can include your custom script and self service actions on an realy easy way to this tool.
 ![Support](https://github.com/JayRHa/System-Information-Tool/blob/main/.images/support.png)
+
 To add self service actions you have to place the powershell script in the script folder and add to the "_actions.json" the action name and the script name
 ![Action](https://github.com/JayRHa/System-Information-Tool/blob/main/.images/action.png)
 

@@ -41,19 +41,22 @@ function Set-SysInfo {
     $systemInfo = Get-SysInfo
 
     $WPFlblHostname.Content = $systemInfo.Hostname
-    $WPFlblSerial.Content = $systemInfo.SerialNr
+    $WPFlblSerial.Content = "033567-24636-67472-453623"
     $WPFlblModel.Content = $systemInfo.Model
     $WPFlblMemory.Content = $systemInfo.Memory
     $WPFlblVersion.Content = $systemInfo.WindowsVersion
-    $WPFlblUser.Content = $systemInfo.CurrentUser + " / " + $systemInfo.EnrolledUser
+    $WPFlblUser.Content = "Jannik" + " / " + "Jannik@test.onmicrosoft.com"
     $WPFlblSync.Content = $systemInfo.LastIntuneSync
     $WPFlblUptime.Content =$systemInfo.Uptime
-    $WPFlblWifi.Content = $systemInfo.WifiSsid
+    $WPFlblWifi.Content = "intunelab"
     if($systemInfo.LanTest){$WPFpicLan.source = "$global:Path\libaries\icon\on.png"}else{$WPFpicLan.source = "$global:Path\libaries\icon\off.png"}
-    if($systemInfo.WifiTest){$WPFpicWifi.source = "$global:Path\libaries\icon\on.png"}else{$WPFpicWifi.source = "$global:Path\libaries\icon\off.png"}
-    if($systemInfo.InternetTest){$WPFpicInternet.source = "$global:Path\libaries\icon\on.png"}else{$WPFpicInternet.source = "$global:Path\libaries\icon\off.png"}
+    if($true){$WPFpicWifi.source = "$global:Path\libaries\icon\on.png"}else{$WPFpicWifi.source = "$global:Path\libaries\icon\off.png"}
+    if($true){$WPFpicInternet.source = "$global:Path\libaries\icon\on.png"}else{$WPFpicInternet.source = "$global:Path\libaries\icon\off.png"}
     if($systemInfo.VpnTest){$WPFpicVpv.source = "$global:Path\libaries\icon\on.png"}else{$WPFpicVpv.source = "$global:Path\libaries\icon\off.png"}
-    $WPFlblip.Content = ($systemInfo.Ips | out-string)
+    $WPFlblip.Content = @"
+    192.168.1.100
+    192.168.3.4
+"@
 }
 
 function Set-UiCompanyPortalButton {
