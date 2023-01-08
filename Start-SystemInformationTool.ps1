@@ -7,6 +7,7 @@ Start and init the SystemInformationTool
 Release notes:
 1.0 :
 - Init
+- Add copy to clipboard when double click on value
 #>
 ###########################################################################################################
 ############################################ Functions ####################################################

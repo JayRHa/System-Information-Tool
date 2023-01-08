@@ -26,7 +26,8 @@ function New-UiInti {
 
     # Init Info
     Set-SysInfo
-
+    Set-ButtonsToCopy
+    
     # Init Company Portal Buttons
     Set-UiCompanyPortalButton
 
@@ -35,6 +36,19 @@ function New-UiInti {
     Add-XamlEvent -object $WPFDataGridSelfService -event "Add_GotMouseCapture" -scriptBlock {Invoke-SelfService -item $this.CurrentItem}
 
     return $true
+}
+
+function Set-ButtonsToCopy {
+    Add-XamlEvent -object $WPFlblHostname -event "Add_MouseDoubleClick" -scriptBlock { Set-Clipboard $WPFlblHostname.Content}
+    Add-XamlEvent -object $WPFlblSerial -event "Add_MouseDoubleClick" -scriptBlock { Set-Clipboard $WPFlblSerial.Content}
+    Add-XamlEvent -object $WPFlblModel -event "Add_MouseDoubleClick" -scriptBlock { Set-Clipboard $WPFlblModel.Content}
+    Add-XamlEvent -object $WPFlblMemory -event "Add_MouseDoubleClick" -scriptBlock { Set-Clipboard $WPFlblMemory.Content}
+    Add-XamlEvent -object $WPFlblVersion -event "Add_MouseDoubleClick" -scriptBlock { Set-Clipboard $WPFlblVersion.Content}
+    Add-XamlEvent -object $WPFlblUser -event "Add_MouseDoubleClick" -scriptBlock { Set-Clipboard $WPFlblUser.Content}
+    Add-XamlEvent -object $WPFlblSync -event "Add_MouseDoubleClick" -scriptBlock { Set-Clipboard $WPFlblSync.Content}
+    Add-XamlEvent -object $WPFlblUptime -event "Add_MouseDoubleClick" -scriptBlock { Set-Clipboard $WPFlblUptime.Content}
+    Add-XamlEvent -object $WPFlblWifi -event "Add_MouseDoubleClick" -scriptBlock { Set-Clipboard $WPFlblWifi.Content}
+    Add-XamlEvent -object $WPFlblip -event "Add_MouseDoubleClick" -scriptBlock { Set-Clipboard $WPFlblip.Content}
 }
 
 function Set-SysInfo {

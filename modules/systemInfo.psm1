@@ -109,7 +109,7 @@ function Open-QuickAssist{
 }
 
 function Invoke-IntuneConnectionTest{  
-    Start-Process powershell.exe -ArgumentList "& '$global:Path\scripts\Check-AutopilotPrerequisitesV2.ps1'"
+    Start-Process powershell.exe -ArgumentList "& '$global:Path\scripts\Check-AutopilotPrerequisites.ps1'"
 }
 
 function Get-DiagnosticLogs{

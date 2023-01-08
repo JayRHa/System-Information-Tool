@@ -1,20 +1,3 @@
-<#PSScriptInfo
-.VERSION 2.0
-.GUID 6a13baa9-ffa4-4643-98c0-f33c6c6c2220
-.AUTHOR Jannik Reinhard
-.COMPANYNAME
-.COPYRIGHT
-.TAGS
-.LICENSEURI
-.PROJECTURI https://github.com/JayRHa/Intune-Scripts/tree/main/Check-AutopilotPrerequisites
-.ICONURI
-.EXTERNALMODULEDEPENDENCIES 
-.REQUIREDSCRIPTS
-.EXTERNALSCRIPTDEPENDENCIES
-.RELEASENOTES
-.PRIVATEDATA
-#>
-
 <# 
 .DESCRIPTION 
  Checking if all prerequisites are fullfiled befor starting the enrollment process 
@@ -26,9 +9,17 @@
  Author: Jannik Reinhard (jannikreinhard.com)
  Twitter: @jannik_reinhard
  Release notes:
-  Version 2.0: Init + Add dynapse endpoint list from ms in addition
-#> 
+  Version 1.0: Init
+  Version 1.1: Windows 10 Enterprise LTSC 
+  Version 1.2: Add TPM info
+  Version 1.3: Minor fixes
+  Version 1.4: Minor fixes
+  Version 1.5: Add Autopilot profile info and dhcp bug fix
+  Version 1.6: Bug fix time.windows.com
+  Version 1.7: Init + Add dynamic endpoint list from ms in addition
+  Version 1.8: Improve endpoint testing and test ntp
 
+#> 
 $ProgressPreference = "SilentlyContinue"
 function Get-NetworkInformation {
     $networkAdapters = Get-WmiObject -Class Win32_NetworkAdapterConfiguration -namespace "root\CIMV2" -computername "." -Filter "IPEnabled = 'True' AND DHCPEnabled ='True'" 
@@ -44,23 +35,22 @@ function Get-NetworkInformation {
 }
 
 function Get-ComputerInformation {
-    $autopilotCache = Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Provisioning\AutopilotPolicyCache" -Name "PolicyJsonCache"
-    $autopilotCache = $autopilotCache | ConvertFrom-Json
-    $autopilotCache = $autopilotCache.DeploymentProfileName
-    $osEdition = systeminfo.exe
-    $osEdition = ($osEdition[2].Replace("OS Name:","").trim()).Replace("Microsoft ","")
+    $AutopilotCache = Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Provisioning\AutopilotPolicyCache" -Name "PolicyJsonCache"
+    $AutopilotCache = $AutopilotCache | ConvertFrom-Json
+    $APProfileName = $AutopilotCache.DeploymentProfileName
+    $OSEdition = (Get-CimInstance win32_operatingsystem).Caption.Replace("Microsoft ","")
     $computerInfo = get-computerinfo
     $tpmInfo = get-tpm
     
-    $windowsVerison = @(
+    $windowsVersion = @(
         "Windows 10 Enterprise", "Windows 10 Education", "Windows 10 Pro for Workstations", "Windows 10 Pro Education", "Windows 10 Pro" ,"Windows 11 Enterprise", "Windows 11 Education", "Windows 11 Pro for Workstations", "Windows 11 Pro Education", "Windows 11 Pro"
     )
     
     Write-Host -NoNewline "  Windows Edition :     "
-    if($windowsVerison.Contains($($osEdition))){
-        Write-Host -ForegroundColor green $osEdition
+    if($windowsVersion.Contains($($OSEdition))){
+        Write-Host -ForegroundColor green $OSEdition
     }else{
-        Write-Host -ForegroundColor red $osEdition
+        Write-Host -ForegroundColor red $OSEdition
     }
     Write-Host "  Windows Version :     $($computerInfo.WindowsVersion) $($computerInfo.OSDisplayVersion)"
     Write-Host "  Windows InstallDate : $($computerInfo.OsInstallDate)"
@@ -74,12 +64,12 @@ function Get-ComputerInformation {
     Write-Host "  Tpm present :         $($tpmInfo.TpmPresent)"
     Write-Host "  Tpm ready :           $($tpmInfo.TpmReady)"
     Write-Host "  Tpm enabled :         $($tpmInfo.TpmEnabled)"
-    if (-not $autopilotCache.DeploymentProfileName) {
+    if (-not $AutopilotCache.DeploymentProfileName) {
         Write-Host "  Cached AP Profile :   Not Present"
         
     }else{
         Write-Host "  Cached AP Profile :   Assigned" 
-        Write-Host "  Autopilot Profile : $autopilotCache"   
+        Write-Host "  Autopilot Profile : $APProfileName"   
     }
 
 }
@@ -120,7 +110,7 @@ function Get-OtherConnectionsTested {
         $msEndpoints += $_
     }
     $msEndpoints = $msEndpoints | Where-Object {$_ -notmatch "\*." -and $_ -notin $connections}    
-    Write-Host -ForegroundColor blue "Check all other connections (443):"
+    Write-Host -ForegroundColor blue "Check all other connections (Not all for windows enrollment necessary) (443):"
 
     $msEndpoints | ForEach-Object {
         $result = (Test-NetConnection -Port 443 -ComputerName $_)    
@@ -132,6 +122,56 @@ function Get-OtherConnectionsTested {
         }
     }
     Write-Host
+}
+function Get-NtpTime ( [String]$NTPServer )
+# credits to https://madwithpowershell.blogspot.com/2016/06/getting-current-time-from-ntp-service.html
+{
+	# Build NTP request packet. We'll reuse this variable for the response packet
+	$NTPData    = New-Object byte[] 48  # Array of 48 bytes set to zero
+	$NTPData[0] = 27                    # Request header: 00 = No Leap Warning; 011 = Version 3; 011 = Client Mode; 00011011 = 27
+
+	try {
+		# Open a connection to the NTP service
+		$Socket = New-Object Net.Sockets.Socket ( 'InterNetwork', 'Dgram', 'Udp' )
+		$Socket.SendTimeOut    = 2000  # ms
+		$Socket.ReceiveTimeOut = 2000  # ms
+		$Socket.Connect( $NTPServer, 123 )
+
+		# Make the request
+		$Null = $Socket.Send(    $NTPData )
+		$Null = $Socket.Receive( $NTPData )
+
+		# Clean up the connection
+		$Socket.Shutdown( 'Both' )
+		$Socket.Close()
+	}
+
+	catch {
+		return $null
+	}
+
+	# Extract relevant portion of first date in result (Number of seconds since "Start of Epoch")
+	$Seconds = [BitConverter]::ToUInt32( $NTPData[43..40], 0 )
+
+	# Add them to the "Start of Epoch", convert to local time zone, and return
+	( [datetime]'1/1/1900' ).AddSeconds( $Seconds ).ToLocalTime()
+}
+function Get-NtpTimeTested{
+    Write-Host -ForegroundColor blue "Test NTP:"
+    $timeserver = "time.windows.com"
+    Write-Host -NoNewline "  TimeServier: $timeserver "
+    $timeserverip = (Resolve-DnsName -Name $timeserver -ErrorAction SilentlyContinue).IP4Address
+    if( $null -eq $timeserverip ) {
+        Write-Host -ForegroundColor Red ": False (not resolved)"
+    } else {
+        Write-Host -NoNewline "($timeserverip): "
+        $time = Get-NtpTime($timeserver)
+        if($null -ne $time){
+            Write-Host -ForegroundColor Green "True ($time)"
+        }else{
+            Write-Host -ForegroundColor Red ": False (Not Time response)"
+        }
+    }
 }
 
 ###########################################################################
@@ -205,9 +245,7 @@ $connections443 = @(
 
 $connections80 = @(
     [pscustomobject]@{uri='emdl.ws.microsoft.com';Area='Windows Update'},
-    [pscustomobject]@{uri='dl.delivery.mp.microsoft.com';Area='Windows Update'},    
-
-    [pscustomobject]@{uri='time.windows.com';Area='Time service'}
+    [pscustomobject]@{uri='dl.delivery.mp.microsoft.com';Area='Windows Update'}
 )
 
 
@@ -232,8 +270,8 @@ Write-Host -ForegroundColor Yellow "---------------------------------"
 Get-ConnectionTest -connections $connections443 -port 443
 Get-ConnectionTest -connections $connections80 -port 80
 Get-OtherConnectionsTested -connections ($connections80 + $connections443).uri
+Get-NtpTimeTested
 Write-Host
 Write-Host -ForegroundColor Yellow "######################################"
 Write-Host -ForegroundColor Yellow "#  Autopilot prerequisite check Done #"
 Write-Host -ForegroundColor Yellow "######################################"
-Read-Host "Press [Enter] to close"

@@ -54,7 +54,7 @@
                                 <Label HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Foreground="White" Content="Hostname:" FontWeight="Bold"/>
                                 <Label HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Foreground="#FF2F7FD4" x:Name="lblHostname" />
                             </StackPanel>
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal" >
                                 <Label HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Foreground="White" Content="Serial Nr.:" FontWeight="Bold"/>
                                 <Label HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" Foreground="#FF2F7FD4" x:Name="lblSerial"/>
                             </StackPanel>
