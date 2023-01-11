@@ -83,8 +83,8 @@ function Get-SysInfo {
         Uptime              = $uptime.ToString("MM/dd/yyyy HH:mm:ss")
         SerialNr            = (Get-ciminstance Win32_OperatingSystem).SerialNumber
         WifiSsid            = if($wifiSsid){$wifiSsid}else{"No Wifi connection"}
-        LanTest             = Test-ConnectionType -adapters $adapters -test "*Wireless*"
-        WifiTest            = Test-ConnectionType -adapters $adapters -test "*Ethernet*"
+        LanTest             = Test-ConnectionType -adapters $adapters -test "*Ethernet*"
+        WifiTest            = Test-ConnectionType -adapters $adapters -test "*Wireless*"
         InternetTest        = Test-InternetConnection
         VpnTest             = Test-VPNConnection
         Ips                 = Get-Ips
